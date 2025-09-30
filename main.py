@@ -73,9 +73,14 @@ def report_chart_combined(readings, year, month):
             continue
 
         day = r.date.strftime("%d")
-        # Bar length = max_temp
-        bar = "+" * int(r.max_temp_c)
-        print(f"{day} \033[91m{bar}\033[0m {int(r.min_temp_c)}C - {int(r.max_temp_c)}C")
+
+        # Blue bar = min temperature
+        blue_part = "\033[94m" + "+" * int(r.min_temp_c) + "\033[0m"
+        # Red bar = difference between max and min
+        red_part = "\033[91m" + "+" * (int(r.max_temp_c) - int(r.min_temp_c)) + "\033[0m"
+
+        print(f"{day} {blue_part}{red_part} {int(r.min_temp_c)}C - {int(r.max_temp_c)}C")
+
 
 
 
