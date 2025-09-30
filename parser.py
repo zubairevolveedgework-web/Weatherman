@@ -3,6 +3,7 @@ import csv
 from typing import List
 from weather_reading import WeatherReading  # ou put the dataclass in this file
 
+from datetime import datetime
 
 class WeatherDataParser:
     """Parses weather .txt files and converts rows into WeatherReading objects."""
@@ -22,15 +23,25 @@ class WeatherDataParser:
         return readings
 
     def _parse_file(self, file_path: str) -> List[WeatherReading]:
-        """Parse a single .txt file into WeatherReading objects."""
         readings: List[WeatherReading] = []
 
         with open(file_path, "r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
 
             for row in reader:
+                # Convert date string like "2004-8-3" → datetime.date
+                date_str = row.get("PKT", "")
+                parsed_date = None
+                try:
+                    parsed_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+                except ValueError:
+                    try:
+                        parsed_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+                    except Exception:
+                        continue  # skip bad rows
+
                 reading = WeatherReading(
-                    date=row.get("PKT", ""),
+                    date=parsed_date,
                     max_temp_c=self._to_float(row.get("Max TemperatureC")),
                     mean_temp_c=self._to_float(row.get("Mean TemperatureC")),
                     min_temp_c=self._to_float(row.get("Min TemperatureC")),
@@ -57,6 +68,7 @@ class WeatherDataParser:
                 readings.append(reading)
 
         return readings
+
 
     @staticmethod
     def _to_float(value: str):

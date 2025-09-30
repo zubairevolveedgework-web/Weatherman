@@ -1,12 +1,10 @@
-
 from dataclasses import dataclass
 from typing import Optional
-
-# Define a data structure for holding each weather reading.
+from datetime import date
 
 @dataclass
 class WeatherReading:
-    date: str  
+    date: date   # ✅ now a datetime.date object
     max_temp_c: Optional[float]
     mean_temp_c: Optional[float]
     min_temp_c: Optional[float]
