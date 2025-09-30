@@ -36,6 +36,28 @@ def report_averages(readings, year, month):
     print(f"Highest Average: {round(avg_high)}C")
     print(f"Lowest Average: {round(avg_low)}C")
     print(f"Average Mean Humidity: {round(avg_humidity)}%")
+
+def report_chart(readings, year, month):
+        """Draw daily bar charts for a given month."""
+        month_readings = [r for r in readings if r.date.year == year and r.date.month == month]
+
+        if not month_readings:
+            print(f"No data for {year}/{month}")
+            return
+
+        print(f"{month_readings[0].date.strftime('%B %Y')}")
+
+        for r in month_readings:
+            day = r.date.strftime("%d")
+
+            if r.max_temp_c is not None:
+                bar = "+" * int(r.max_temp_c)
+                print(f"{day} \033[91m{bar}\033[0m {int(r.max_temp_c)}C")  # red for max
+
+            if r.min_temp_c is not None:
+                bar = "+" * int(r.min_temp_c)
+                print(f"{day} \033[94m{bar}\033[0m {int(r.min_temp_c)}C")  # blue for min
+                
 def main():
     parser = argparse.ArgumentParser(description="Weather Report Generator")
     parser.add_argument(
@@ -45,6 +67,7 @@ def main():
     )
     parser.add_argument("-e", type=int, help="Report extremes for given year")
     parser.add_argument("-a", type=str, help="Report averages for given year/month (format: YYYY/MM)")
+    parser.add_argument("-c", type=str, help="Report chart for given year/month (format: YYYY/MM)")
 
     args = parser.parse_args()
 
@@ -58,6 +81,9 @@ def main():
     if args.a:
         year, month = map(int, args.a.split("/"))
         report_averages(readings, year, month)
+    if args.c:
+        year, month = map(int, args.c.split("/"))
+        report_chart(readings, year, month)
 
 
 if __name__ == "__main__":
